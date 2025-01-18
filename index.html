@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        *{
+            font-family: sans-serif;
+            cursor: pointer;
+        }
+        .add-to-cart-btn:hover {
+            background-color: #36B37B;
+            transition: background-color 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="app" class="container mx-auto py-6 px-4">
+
+        <!-- Navbar -->
+        <header id="navbar" class="flex justify-between items-center bg-white p-4 shadow-md hidden">
+            <h1 class="text-3xl font-bold text-blue-800">SUH STORE  <h2 class="text-red-700 text-xxl">when checkout chat me on WhatsApp send message  to picture of porduct and confirm your address order Now</h2> <h3 class="text-green-700">delivery charges only 150pkr</h3></h1>
+            <button id="cartBtn" class="relative" onclick="showCheckoutForm()">
+                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm" id="cartCount">0</span>
+                🛒 Cart
+            </button>
+        </header>
+
+        <!-- Sign-Up Form -->
+        <div id="formsContainer" class="mt-6">
+            <form id="signupForm" class="bg-white p-6 rounded-lg shadow-md space-y-4">
+                <h2 class="text-lg font-bold">Sign Up</h2>
+                <input type="email" id="signupEmail" placeholder="Email" class="border p-2 w-full">
+                <input type="password" id="signupPassword" placeholder="Password" class="border p-2 w-full">
+                <button type="button" class="bg-green-500 text-white px-4 py-2 rounded" onclick="signup()">Submit</button>
+            </form>
+        </div>
+
+        <!-- Product Listings -->
+        <section id="productSection" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 hidden">
+            <!-- Products will be generated dynamically here -->
+        </section>
+
+        <!-- Checkout Form -->
+        <div id="checkoutFormContainer" class="hidden mt-6 bg-white p-6 rounded-lg shadow-md space-y-4">
+            <h2 class="text-lg font-bold">Checkout</h2>
+            <input type="text" id="address" placeholder="Address" class="border p-2 w-full">
+            <input type="text" id="country" placeholder="Country" class="border p-2 w-full">
+            <input type="text" id="phone" placeholder="Phone Number" class="border p-2 w-full">
+            <select id="paymentMethod" class="border p-2 w-full">
+                <option value="easypaisa">Easypaisa - Samreen Shahid (03331417145)</option>
+                <option value="jazzcash">JazzCash - Muhammad Faheem (03006982165)</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+            <button type="button" onclick="submitOrder()" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+        </div>
+
+        <!-- WhatsApp Chat Button -->
+        <a href="https://wa.me/03331417145" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white p-3 rounded-full shadow-lg">💬 Chat on WhatsApp</a>
+     
+    </div>
+
+    <script>
+        let cart = [];
+        let products = [
+            { name: "t-shirt pack of 5", image: "https://tse4.mm.bing.net/th?id=OIP.WCjQERmwObosZ4gM4d1lOAHaD4&pid=Api&P=0&h=220", price: "PKR 1500" },
+            { name: "sun glasses", image: "https://tse2.mm.bing.net/th?id=OIP.B3X1i3LN9uI3wu743IueIgHaHa&pid=Api&P=0&h=220", price: "PKR 1400" },
+            { name: "nike shoes", image: "https://tse1.mm.bing.net/th?id=OIP.zn8On6eurBDephHBFHOwpQHaFL&pid=Api&P=0&h=220", price: "PKR 2000" },
+            { name: "Headphones", image: "https://tse1.mm.bing.net/th?id=OIP.sKscj5BcTXqIFUnMk9NHnAHaFZ&pid=Api&P=0&h=220", price: "PKR 999" },
+            { name: "smart watch", image: "https://tse1.mm.bing.net/th?id=OIP.tW2THcHjVClz4akyleVEsgHaJY&pid=Api&P=0&h=220", price: "PKR 9000" },
+            { name: "salonica bed sheet ", image: "https://tse1.mm.bing.net/th?id=OIP.zTHgQeQcwatxUxgWFNBxRwHaFf&pid=Api&P=0&h=220", price: "PKR 1800" },
+            { name: "salonica bed sheet cotton flat sheet", image: "https://cdn.shopclues.com/images1/detailed/104254/148704528-104254087-1577861764.jpg", price: "PKR 1800" },
+            { name: "watches", image: "https://tse2.mm.bing.net/th?id=OIP.JpM0NjupVeaHdCkotj4teQHaE8&pid=Api&P=0&h=220", price: "PKR 3000" },
+            { name: "watch ultara 19", image: "https://tse2.mm.bing.net/th?id=OIP.naVJj-x6xdBzHtt1ObI0SwHaHa&pid=Api&P=0&h=220", price: "PKR 1900" },
+            { name: "perfume dunhil", image: "https://tse1.mm.bing.net/th?id=OIP.HAliRI5P0Bm_Y__PGd5D0AHaHa&pid=Api&P=0&h=220", price: "PKR 500" },
+            { name: "UDY perfume ", image: "https://tse1.mm.bing.net/th?id=OIP.Gis59A6LKXFKxUTMxTcU1gHaIV&pid=Api&P=0&h=220", price: "PKR 700" },
+            { name: "airpod 3 ", image: "https://tse1.mm.bing.net/th?id=OIP.cwvqXgMC6Gl3Z0QM1-HuRQHaHa&pid=Api&P=0&h=220", price: "PKR 1500" },
+            // You can add more products here
+        ];
+
+        // Generate products and append to the store section
+        function generateProducts() {
+            const productSection = document.getElementById("productSection");
+            products.forEach((product, index) => {
+                const productCard = document.createElement("div");
+                productCard.className = "bg-white p-4 shadow-md rounded-lg hover:shadow-lg transition duration-200";
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-40 object-contain rounded-md mb-2">
+                    <h3 class="font-bold">${product.name}</h3>
+                    <p class="text-gray-600">${product.price}</p>
+                    <button class="add-to-cart-btn bg-blue-500 text-white px-4 py-2 rounded mt-2" onclick="addToCart(${index})">Add to Cart</button>
+                `;
+                productSection.appendChild(productCard);
+            });
+        }
+
+        // Show Cart Count and Cart Items
+        function updateCartCount() {
+            document.getElementById("cartCount").textContent = cart.length;
+        }
+
+        // Add Product to Cart
+        function addToCart(index) {
+            const product = products[index];
+            cart.push(product);
+            updateCartCount();
+        }
+
+        // Show Checkout Form and the Cart Items
+        function showCheckoutForm() {
+            const checkoutFormContainer = document.getElementById("checkoutFormContainer");
+            checkoutFormContainer.classList.remove("hidden");
+            // Optionally, show the cart content in checkout form
+            // Example: Render cart items dynamically on checkout form, if needed.
+        }
+
+        // Submit Order
+        function submitOrder() {
+            const address = document.getElementById("address").value;
+            const country = document.getElementById("country").value;
+            const phone = document.getElementById("phone").value;
+            const paymentMethod = document.getElementById("paymentMethod").value;
+
+            alert(`Order received!\n\nAddress: ${address}\nCountry: ${country}\nPhone: ${phone}\nPayment Method: ${paymentMethod}`);
+        }
+
+        // After Signup, Show the Store
+        function signup() {
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+
+            if (email && password) {
+                alert(`Account created successfully for ${email}`);
+                document.getElementById("formsContainer").classList.add("hidden");
+                // Show the Navbar and Product Section
+                document.getElementById("navbar").classList.remove("hidden");
+                document.getElementById("productSection").classList.remove("hidden");
+
+                // Generate the products dynamically after signup
+                generateProducts();
+            }
+        }
+    </script>
+</body>
+</html>
