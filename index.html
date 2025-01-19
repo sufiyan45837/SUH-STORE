@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SF Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         *{
             font-family: sans-serif;
@@ -14,14 +15,31 @@
             background-color: #36B37B;
             transition: background-color 0.3s ease-in-out;
         }
+        /* Loader Styles */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div id="app" class="container mx-auto py-6 px-4">
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="flex">
+            <span class="text-white font-bold text-2xl">Loading...</span>
+        </div>
 
         <!-- Navbar -->
         <header id="navbar" class="flex justify-between items-center bg-white p-4 shadow-md hidden">
-            <h1 class="text-3xl font-bold text-blue-800">SUH STORE  <h2 class="text-red-700 text-xxl">when checkout chat me on WhatsApp send message  to picture of porduct and confirm your address order Now</h2> <h3 class="text-green-700">delivery charges only 150pkr</h3></h1>
+            <h1 class="text-3xl font-bold text-blue-800">SUH STORE</h1>
+  
             <button id="cartBtn" class="relative" onclick="showCheckoutForm()">
                 <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm" id="cartCount">0</span>
                 🛒 Cart
@@ -38,8 +56,13 @@
             </form>
         </div>
 
+        <!-- Search Filter -->
+        <div id="searchFilterContainer" class="mt-6">
+            <input id="searchInput" type="text" class="border p-2 w-full rounded" placeholder="Search Products..." onkeyup="filterProducts()">
+        </div>
+
         <!-- Product Listings -->
-        <section id="productSection" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 hidden">
+        <section id="productSection" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
             <!-- Products will be generated dynamically here -->
         </section>
 
@@ -59,30 +82,34 @@
 
         <!-- WhatsApp Chat Button -->
         <a href="https://wa.me/03331417145" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white p-3 rounded-full shadow-lg">💬 Chat on WhatsApp</a>
-     
+
     </div>
+    <div>            <h2 class="text-red-700 text-xxl">When checking out, chat with me on WhatsApp, send the product picture and confirm your address. Order Now!</h2>
+        <h3 class="text-green-700">Delivery charges only 150 PKR</h3></div>
 
     <script>
+        emailjs.init('user_mHrzVqQs64uGo1dFmzI99');
+
         let cart = [];
         let products = [
-            { name: "t-shirt pack of 5", image: "https://tse4.mm.bing.net/th?id=OIP.WCjQERmwObosZ4gM4d1lOAHaD4&pid=Api&P=0&h=220", price: "PKR 1500" },
-            { name: "sun glasses", image: "https://tse2.mm.bing.net/th?id=OIP.B3X1i3LN9uI3wu743IueIgHaHa&pid=Api&P=0&h=220", price: "PKR 1400" },
-            { name: "nike shoes", image: "https://tse1.mm.bing.net/th?id=OIP.zn8On6eurBDephHBFHOwpQHaFL&pid=Api&P=0&h=220", price: "PKR 2000" },
+            { name: "T-shirt Pack of 5", image: "https://tse4.mm.bing.net/th?id=OIP.WCjQERmwObosZ4gM4d1lOAHaD4&pid=Api&P=0&h=220", price: "PKR 1500" },
+            { name: "Sunglasses", image: "https://tse2.mm.bing.net/th?id=OIP.B3X1i3LN9uI3wu743IueIgHaHa&pid=Api&P=0&h=220", price: "PKR 1400" },
+            { name: "Nike Shoes", image: "https://tse1.mm.bing.net/th?id=OIP.zn8On6eurBDephHBFHOwpQHaFL&pid=Api&P=0&h=220", price: "PKR 2000" },
             { name: "Headphones", image: "https://tse1.mm.bing.net/th?id=OIP.sKscj5BcTXqIFUnMk9NHnAHaFZ&pid=Api&P=0&h=220", price: "PKR 999" },
-            { name: "smart watch", image: "https://tse1.mm.bing.net/th?id=OIP.tW2THcHjVClz4akyleVEsgHaJY&pid=Api&P=0&h=220", price: "PKR 9000" },
-            { name: "salonica bed sheet ", image: "https://tse1.mm.bing.net/th?id=OIP.zTHgQeQcwatxUxgWFNBxRwHaFf&pid=Api&P=0&h=220", price: "PKR 1800" },
-            { name: "salonica bed sheet cotton flat sheet", image: "https://cdn.shopclues.com/images1/detailed/104254/148704528-104254087-1577861764.jpg", price: "PKR 1800" },
-            { name: "watches", image: "https://tse2.mm.bing.net/th?id=OIP.JpM0NjupVeaHdCkotj4teQHaE8&pid=Api&P=0&h=220", price: "PKR 3000" },
-            { name: "watch ultara 19", image: "https://tse2.mm.bing.net/th?id=OIP.naVJj-x6xdBzHtt1ObI0SwHaHa&pid=Api&P=0&h=220", price: "PKR 1900" },
-            { name: "perfume dunhil", image: "https://tse1.mm.bing.net/th?id=OIP.HAliRI5P0Bm_Y__PGd5D0AHaHa&pid=Api&P=0&h=220", price: "PKR 500" },
-            { name: "UDY perfume ", image: "https://tse1.mm.bing.net/th?id=OIP.Gis59A6LKXFKxUTMxTcU1gHaIV&pid=Api&P=0&h=220", price: "PKR 700" },
-            { name: "airpod 3 ", image: "https://tse1.mm.bing.net/th?id=OIP.cwvqXgMC6Gl3Z0QM1-HuRQHaHa&pid=Api&P=0&h=220", price: "PKR 1500" },
-            // You can add more products here
+            { name: "Smart Watch", image: "https://tse1.mm.bing.net/th?id=OIP.tW2THcHjVClz4akyleVEsgHaJY&pid=Api&P=0&h=220", price: "PKR 9000" },
+            { name: "Salonica Bed Sheet", image: "https://tse1.mm.bing.net/th?id=OIP.zTHgQeQcwatxUxgWFNBxRwHaFf&pid=Api&P=0&h=220", price: "PKR 1800" },
+            { name: "Salonica Bed Sheet Cotton Flat Sheet", image: "https://cdn.shopclues.com/images1/detailed/104254/148704528-104254087-1577861764.jpg", price: "PKR 1800" },
+            { name: "Watches", image: "https://tse2.mm.bing.net/th?id=OIP.JpM0NjupVeaHdCkotj4teQHaE8&pid=Api&P=0&h=220", price: "PKR 3000" },
+            { name: "Watch Ultara 19", image: "https://tse2.mm.bing.net/th?id=OIP.naVJj-x6xdBzHtt1ObI0SwHaHa&pid=Api&P=0&h=220", price: "PKR 1900" },
+            { name: "Perfume Dunhil", image: "https://tse1.mm.bing.net/th?id=OIP.HAliRI5P0Bm_Y__PGd5D0AHaHa&pid=Api&P=0&h=220", price: "PKR 500" },
+            { name: "UDY Perfume", image: "https://tse1.mm.bing.net/th?id=OIP.Gis59A6LKXFKxUTMxTcU1gHaIV&pid=Api&P=0&h=220", price: "PKR 700" },
+            { name: "Airpod 3", image: "https://tse1.mm.bing.net/th?id=OIP.cwvqXgMC6Gl3Z0QM1-HuRQHaHa&pid=Api&P=0&h=220", price: "PKR 1500" },
+            // More products can be added here
         ];
 
-        // Generate products and append to the store section
         function generateProducts() {
             const productSection = document.getElementById("productSection");
+            productSection.innerHTML = ''; // Clear existing products
             products.forEach((product, index) => {
                 const productCard = document.createElement("div");
                 productCard.className = "bg-white p-4 shadow-md rounded-lg hover:shadow-lg transition duration-200";
@@ -96,51 +123,78 @@
             });
         }
 
-        // Show Cart Count and Cart Items
         function updateCartCount() {
             document.getElementById("cartCount").textContent = cart.length;
         }
 
-        // Add Product to Cart
         function addToCart(index) {
             const product = products[index];
             cart.push(product);
             updateCartCount();
         }
 
-        // Show Checkout Form and the Cart Items
         function showCheckoutForm() {
             const checkoutFormContainer = document.getElementById("checkoutFormContainer");
             checkoutFormContainer.classList.remove("hidden");
-            // Optionally, show the cart content in checkout form
-            // Example: Render cart items dynamically on checkout form, if needed.
         }
 
-        // Submit Order
         function submitOrder() {
             const address = document.getElementById("address").value;
             const country = document.getElementById("country").value;
             const phone = document.getElementById("phone").value;
             const paymentMethod = document.getElementById("paymentMethod").value;
 
-            alert(`Order received!\n\nAddress: ${address}\nCountry: ${country}\nPhone: ${phone}\nPayment Method: ${paymentMethod}`);
+            const orderDetails = {
+                email: document.getElementById("signupEmail").value,
+                products: cart,
+                address: address,
+                country: country,
+                phone: phone,
+                paymentMethod: paymentMethod
+            };
+
+            // Send the order details to your email using EmailJS
+            emailjs.send('service_xxxxxxx', 'template_yyyyyy', {
+                to_email: 'sufiyanfaheem281@gmail.com',
+                customer_email: orderDetails.email,
+                order_details: JSON.stringify(orderDetails),
+                product_images: cart.map(item => item.image).join(', ')
+            }).then((response) => {
+                alert('Order received! We will get back to you shortly.');
+            }, (error) => {
+                console.error('Error sending order:', error);
+            });
         }
 
-        // After Signup, Show the Store
         function signup() {
             const email = document.getElementById("signupEmail").value;
             const password = document.getElementById("signupPassword").value;
 
             if (email && password) {
-                alert(`Account created successfully for ${email}`);
-                document.getElementById("formsContainer").classList.add("hidden");
-                // Show the Navbar and Product Section
-                document.getElementById("navbar").classList.remove("hidden");
-                document.getElementById("productSection").classList.remove("hidden");
+                // Show loading
+                document.getElementById("loadingScreen").style.display = 'flex';
 
-                // Generate the products dynamically after signup
-                generateProducts();
+                setTimeout(() => {
+                    alert(`Account created successfully for ${email}`);
+                    document.getElementById("formsContainer").classList.add("hidden");
+                    document.getElementById("navbar").classList.remove("hidden");
+                    document.getElementById("productSection").classList.remove("hidden");
+
+                    generateProducts();
+
+                    // Hide loading screen
+                    document.getElementById("loadingScreen").style.display = 'none';
+                }, 1500); // simulate delay
             }
+        }
+
+        function filterProducts() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(query)
+            );
+            products = filteredProducts;
+            generateProducts();
         }
     </script>
 </body>
