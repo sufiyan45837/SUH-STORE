@@ -120,7 +120,7 @@
             productSection.innerHTML = ''; // Clear existing products
             products.forEach((product, index) => {
                 const productCard = document.createElement("div");
-                productCard.className = "bg-white p-4 shadow-md rounded-lg hover:shadow-lg transition duration-200";
+                productCard.className = "bg-white p-4 shadow-lg shadow-black rounded-lg hover:shadow-lg transition duration-200";
                 productCard.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" class="w-full h-40 object-contain rounded-md mb-2">
                     <h3 class="font-bold">${product.name}</h3>
