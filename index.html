@@ -17,6 +17,29 @@
             background-color: #36B37B;
             transition: background-color 0.3s ease-in-out;
         }
+
+        /* For the WhatsApp chat button */
+        .whatsapp-chat-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25d366;
+            color: white;
+            border-radius: 50%;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 24px;
+            transition: background-color 0.3s;
+        }
+
+        .whatsapp-chat-btn:hover {
+            background-color: #128C7E;
+        }
+
+        /* For smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 
@@ -24,7 +47,7 @@
     <div id="app" class="container mx-auto py-6 px-4">
         <!-- Header -->
         <header id="navbar" class="flex justify-between items-center bg-white p-4 shadow-md">
-            <h1 class="text-3xl font-bold text-blue-800">SF Store <h2>click on cart </h2></h1>
+            <h1 class="text-3xl font-bold text-blue-800">SF Store <h2 class="text-xl font-bold text-green-600">Click on cart to sumbit order</h2></h1>
             <button id="cartBtn" class="relative" onclick="showCheckoutForm()">
                 <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm" id="cartCount">0</span>
                 🛒 Cart
@@ -65,7 +88,7 @@
                 </select>
 
                 <!-- Additional Notes -->
-                <textarea name="message" placeholder="Add your porduct name and type number total of porduct example watch 4" class="border p-2 w-full rounded"></textarea>
+                <textarea name="message" placeholder="Add your porduct that you order and add total number of porduct when sumbit then our team contact you add correctly details" class="border p-2 w-full rounded"></textarea>
 
                 <!-- Submit Button -->
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Submit</button>
@@ -75,6 +98,9 @@
             </form>
         </div>
     </div>
+
+    <!-- WhatsApp Chat Button -->
+    <a href="https://wa.me/03331417145" target="_blank" class="whatsapp-chat-btn">💬</a>
 
     <script>
         let cart = [];
@@ -118,6 +144,9 @@
         function showCheckoutForm() {
             const checkoutFormContainer = document.getElementById("checkoutFormContainer");
             checkoutFormContainer.classList.remove("hidden");
+            document.getElementById("checkoutFormContainer").scrollIntoView({
+                behavior: "smooth"
+            });
         }
 
         function filterProducts() {
